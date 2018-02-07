@@ -10,19 +10,24 @@ exports.headers = {
   'Content-Type': 'text/html'
 };
 
+exports.fetchFile = function(url, response) {
+  fs.readFile(url, 'utf8', function(error, data) {
+    if (error) {
+      return response.end(error);
+    }
+    response.end(data);
+  });
+};
+
 exports.actions = {
   'GET': function(request, response) {
     var statusCode = 200;
     response.writeHead(statusCode, exports.headers);
 
     if (request.url === '/') {
-      fs.readFile(__dirname + '/public/index.html', 'utf8', function(error, data) {
-        if (error) {
-          return response.end(error);
-        }
-        response.end(data);
-      });
+      request.url = '/index.html';
     }
+    exports.fetchFile(archive.paths.siteAssets + request.url, response);
   }
 };
 
