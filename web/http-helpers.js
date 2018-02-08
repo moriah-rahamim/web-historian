@@ -1,6 +1,7 @@
 var path = require('path');
 var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
+var urlParser = require('url');
 
 exports.headers = {
   'access-control-allow-origin': '*',
@@ -40,22 +41,19 @@ exports.actions = {
 
   'POST': function(request, response){
 
-    console.log('here is our request', request.method);
-    var statusCode = 201;
+    var statusCode = 302;
     response.writeHead(statusCode, exports.headers);
     var path = archive.paths.list;
     var data = "";
     request.on('data', function(chunk) {
-
       data += chunk;
-      
-
     });
     
     request.on('end', function(){
-      console.log(data);
+      var params = urlParser.parse(data).pathname;
+      data = params.substr(4);
       fs.open(path, 'a', function(err, fd) {
-        fs.write(fd, data);
+        fs.write(fd, data + '\n');
         response.writeHead(statusCode, exports.headers);
         exports.fetchFile(archive.paths.siteAssets + '/loading.html', response);
       });
