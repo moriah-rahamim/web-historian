@@ -48,15 +48,12 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  
-  fs.open(exports.paths.list, 'a', function(err, fd) {
+  fs.open(exports.paths.list, 'a', (err, fd) => {
     fs.write(fd, url + '\n', callback);
   });
-
 };
 
 exports.isUrlArchived = function(url, callback) {
-  
   fs.open(exports.paths.archivedSites + '/' + url, 'r', (err,fd)=>{
     var exists = true;
     if (err) {
@@ -68,4 +65,7 @@ exports.isUrlArchived = function(url, callback) {
 };
 
 exports.downloadUrls = function(urls) {
+//For each URL in array, create a file in the archived/sites folder
+//
+
 };

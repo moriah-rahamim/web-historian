@@ -44,20 +44,35 @@ exports.actions = {
     var statusCode = 302;
     response.writeHead(statusCode, exports.headers);
     var path = archive.paths.list;
-    var data = "";
+    var url = "";
     request.on('data', function(chunk) {
-      data += chunk;
+      url += chunk;
     });
 
-    var writeHeadAndRedirect = function(){
+    var writeHeadAndRedirect = function(url, path){
       response.writeHead(statusCode, exports.headers);
-      exports.fetchFile(archive.paths.siteAssets + '/loading.html', response);
+      exports.fetchFile(path + '/' + url, response);
     };
     
     request.on('end', function() {
-      var params = urlParser.parse(data).pathname;
-      data = params.substr(4);
-      archive.addUrlToList(data, writeHeadAndRedirect);
+      var params = urlParser.parse(url).pathname;
+      url = params.substr(4);
+      archive.isUrlInList(url, (exists)=>{
+        if (exists) {
+          archive.isUrlArchived(url, (exists)=>{
+            if (exists) {
+              writeHeadAndRedirect(url, archive.paths.archivedSites);
+            } else {
+              writeHeadAndRedirect('loading.html', archive.paths.siteAssets);
+            }
+          });
+        } else {
+          archive.addUrlToList(url, ()=>{
+            writeHeadAndRedirect('loading.html', archive.paths.siteAssets);
+          });
+        }
+      
+      });
     });
  
 
