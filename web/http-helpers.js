@@ -36,6 +36,34 @@ exports.actions = {
       prefix = archive.paths.siteAssets;
     }
     exports.fetchFile(prefix + request.url, response);
+  },
+
+  'POST': function(request, response){
+
+    console.log('here is our request', request.method);
+    var statusCode = 201;
+    response.writeHead(statusCode, exports.headers);
+    var path = archive.paths.list;
+    var data = "";
+    request.on('data', function(chunk) {
+
+      data += chunk;
+      
+
+    });
+    
+    request.on('end', function(){
+      console.log(data);
+      fs.open(path, 'a', function(err, fd) {
+        fs.write(fd, data);
+        response.writeHead(statusCode, exports.headers);
+        exports.fetchFile(archive.paths.siteAssets + '/loading.html', response);
+      });
+    });
+ 
+
+    
+
   }
 };
 
