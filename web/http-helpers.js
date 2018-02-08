@@ -48,15 +48,16 @@ exports.actions = {
     request.on('data', function(chunk) {
       data += chunk;
     });
+
+    var writeHeadAndRedirect = function(){
+      response.writeHead(statusCode, exports.headers);
+      exports.fetchFile(archive.paths.siteAssets + '/loading.html', response);
+    };
     
-    request.on('end', function(){
+    request.on('end', function() {
       var params = urlParser.parse(data).pathname;
       data = params.substr(4);
-      fs.open(path, 'a', function(err, fd) {
-        fs.write(fd, data + '\n');
-        response.writeHead(statusCode, exports.headers);
-        exports.fetchFile(archive.paths.siteAssets + '/loading.html', response);
-      });
+      archive.addUrlToList(data, writeHeadAndRedirect);
     });
  
 

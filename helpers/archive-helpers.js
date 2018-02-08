@@ -40,12 +40,31 @@ exports.readListOfUrls = function(callback) {
 };
 
 exports.isUrlInList = function(url, callback) {
+  exports.readListOfUrls((urls) => {
+    var exists = urls.indexOf(url) !== -1;
+    callback(exists);
+  });
+
 };
 
 exports.addUrlToList = function(url, callback) {
+  
+  fs.open(exports.paths.list, 'a', function(err, fd) {
+    fs.write(fd, url + '\n', callback);
+  });
+
 };
 
 exports.isUrlArchived = function(url, callback) {
+  
+  fs.open(exports.paths.archivedSites + '/' + url, 'r', (err,fd)=>{
+    var exists = true;
+    if (err) {
+      exists = false;      
+    } 
+    callback(exists);
+  });
+
 };
 
 exports.downloadUrls = function(urls) {
