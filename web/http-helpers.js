@@ -13,7 +13,8 @@ exports.headers = {
 exports.fetchFile = function(url, response) {
   fs.readFile(url, 'utf8', function(error, data) {
     if (error) {
-      return response.end(error);
+      response.writeHead(404, exports.headers);
+      return response.end(error.toString());
     }
     response.end(data);
   });
@@ -23,11 +24,18 @@ exports.actions = {
   'GET': function(request, response) {
     var statusCode = 200;
     response.writeHead(statusCode, exports.headers);
+    var prefix;
 
     if (request.url === '/') {
       request.url = '/index.html';
     }
-    exports.fetchFile(archive.paths.siteAssets + request.url, response);
+
+    if (request.url.includes('www.')) {
+      prefix = archive.paths.archivedSites;
+    } else {
+      prefix = archive.paths.siteAssets;
+    }
+    exports.fetchFile(prefix + request.url, response);
   }
 };
 
