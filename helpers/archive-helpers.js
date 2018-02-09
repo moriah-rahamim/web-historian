@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-var http = require('http');
+var https = require('https');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -45,11 +45,11 @@ exports.isUrlInList = function(url, callback) {
     var exists = urls.indexOf(url) !== -1;
     callback(exists);
   });
-
 };
 
 exports.addUrlToList = function(url, callback) {
   fs.open(exports.paths.list, 'a', (err, fd) => {
+    if(err) throw new Error('error');
     fs.write(fd, url + '\n', callback);
   });
 };
@@ -62,20 +62,21 @@ exports.isUrlArchived = function(url, callback) {
     } 
     callback(exists);
   });
-
 };
 
 exports.downloadUrls = function(urls) {
 //For each URL in array, create a file in the archived/sites folder
+  if (!Array.isArray(urls)) {
+    urls = [urls];
+  }
 
   _.forEach(urls, (url)=> {
-    var httpUrl = url;
-    if (!url.includes('http://')) {
-      httpUrl = 'http://' + url;
+    var httpsUrl = url;
+    if (!url.includes('https://')) {
+      httpsUrl = 'https://' + url;
     }
 
-    http.get(httpUrl, (response) => {
-
+    https.get(httpsUrl, (response) => {
       var data = '';
       response.on('data', (chunk) => {
         data += chunk;
