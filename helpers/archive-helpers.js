@@ -49,13 +49,15 @@ exports.isUrlInList = function(url, callback) {
 
 exports.addUrlToList = function(url, callback) {
   fs.open(exports.paths.list, 'a', (err, fd) => {
-    if(err) throw new Error('error');
+    if (err) {
+      throw new Error('error');
+    }
     fs.write(fd, url + '\n', callback);
   });
 };
 
 exports.isUrlArchived = function(url, callback) {
-  fs.open(exports.paths.archivedSites + '/' + url, 'r', (err,fd)=>{
+  fs.open(exports.paths.archivedSites + '/' + url, 'r', (err, fd)=>{
     var exists = true;
     if (err) {
       exists = false;      

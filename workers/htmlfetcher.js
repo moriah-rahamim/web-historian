@@ -15,6 +15,7 @@ exports.worker = function() {
   });
 };
 
+exports.worker();
 
 // read list of urls
 // check which urls are not yet archived
